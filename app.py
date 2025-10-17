@@ -25,7 +25,7 @@ class LearningModule:
     def __init__(self, knowledge_file):
         self.knowledge_file = knowledge_file
         self.learning_pattern = r'^(.+?)(?:은|는) (.+?)$'
-        self.privacy_keywords = ['이름', '주소', '번호', '나이', '직업', '학교', '회사', '나']
+        self.privacy_keywords = ['이름', '주소', '번호', '나이', '직업', '학교', '회사']
         self.verb_endings = ['이다', '이야', '입니다', '야', '이']
         self.knowledge_db = self._load_from_file(self.knowledge_file, "지식")
 
