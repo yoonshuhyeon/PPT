@@ -5,12 +5,10 @@ import random
 import json
 import atexit
 
-# --- 레벤슈타인 거리 계산 함수 추가 ---
+# --- 레벤슈타인 거리 계산 함수 --- 
 def levenshtein_distance(s1, s2):
-    if len(s1) < len(s2):
-        return levenshtein_distance(s2, s1)
-    if len(s2) == 0:
-        return len(s1)
+    if len(s1) < len(s2): return levenshtein_distance(s2, s1)
+    if len(s2) == 0: return len(s1)
     previous_row = range(len(s2) + 1)
     for i, c1 in enumerate(s1):
         current_row = [i + 1]
@@ -22,6 +20,7 @@ def levenshtein_distance(s1, s2):
         previous_row = current_row
     return previous_row[-1]
 
+# --- 지능의 구성 요소 --- 
 class LearningModule:
     def __init__(self, knowledge_file):
         self.knowledge_file = knowledge_file
@@ -40,7 +39,7 @@ class LearningModule:
             except json.JSONDecodeError: return {}
         return {}
 
-    def _save_to_file(self, data, fp): 
+    def _save_to_file(self, data, fp):
         json.dump(data, open(fp, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
 
     def process(self, text):
@@ -69,18 +68,41 @@ class LearningModule:
             self._save_to_file(self.knowledge_db, self.knowledge_file)
             return f"(지식 습득!) '{subject}'에 대한 사실을 배웠습니다.", self.knowledge_db, True
 
+class GenerativeModule:
+    def __init__(self, memory_file):
+        self.memory_file = memory_file
+        self.markov_model = self._load_from_file(self.memory_file, "경험")
+    def _load_from_file(self, fp, mt): 
+        print(f"  > [{mt} 회로] 활성화. 과거의 {mt}을(를) 불러옵니다.")
+        if os.path.exists(fp):
+            try:
+                with open(fp, 'r', encoding='utf-8') as f: 
+                    data = json.load(f)
+                    return data if isinstance(data, dict) else {}
+            except json.JSONDecodeError: return {}
+        return {}
+    def _save_to_file(self, data, fp): json.dump(data, open(fp, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+    def train(self, text):
+        words = text.split()
+        for i in range(len(words) - 1):
+            self.markov_model.setdefault(words[i], []).append(words[i+1])
+
 class SimpleChatBot:
-    def __init__(self, kf="data/knowledge_v2.json"):
+    def __init__(self, kf="data/knowledge_v2.json", mf="data/memory_v2.json"):
         self.learning = LearningModule(kf)
-        # 올바른 정규식으로 수정
+        self.generative = GenerativeModule(mf)
         self.default_rules = [
             (r'^(안녕|하이)[.!?]?$', ['반갑습니다.']),
-            (r'(너의|네|니) 이름', ['저는 모두의 지식으로 성장하는 AI입니다.']),
+            (r'(너의|네) 이름', ['저는 모두의 지식으로 성장하는 AI입니다.']),
             (r'^(고마워|감사합니다|땡큐)[.!?]?$', ['천만에요!', '도움이 되셨다니 다행입니다.']),
-            (r'^(아하|아|오|그렇구나|알겠습니다|네|그렇군)[.!?]?$', ['도움이 되셨다니 다행입니다.', '언제든지 더 물어보세요!'])
+            (r'^(아하|아|오|그렇구나|알겠습니다|네)[.!?]?$', ['도움이 되셨다니 다행입니다.', '언제든지 더 물어보세요!'])
         ]
     
     def think(self, user_input):
+        self.generative.train(user_input)
+        # 매 대화마다 대화 경험(메모리)을 즉시 저장
+        self.generative._save_to_file(self.generative.markov_model, self.generative.memory_file)
+
         learning_response, _, learned = self.learning.process(user_input)
         if learned or (learning_response and not learned): return learning_response
 
@@ -115,7 +137,7 @@ class SimpleChatBot:
     def shutdown(self):
         print("AI 종료 절차 완료.")
 
-# --- Flask 웹 애플리케이션 설정 ---
+# --- Flask 웹 애플리케이션 설정 --- 
 
 app = Flask(__name__, template_folder='.')
 print("AI의 의식을 로딩합니다...")
