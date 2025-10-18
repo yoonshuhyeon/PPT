@@ -79,7 +79,7 @@ class GenerativeModule:
             self.markov_model.setdefault(words[i], []).append(words[i+1])
 
 class SimpleChatBot:
-    def __init__(self, kf="data/knowledge.json", mf="data/memory.json"):
+    def __init__(self, kf="data/knowledge_v2.json", mf="data/memory_v2.json"):
         self.learning = LearningModule(kf)
         self.generative = GenerativeModule(mf)
         self.default_rules = [
