@@ -21,7 +21,7 @@
 </head>
 <body>
     <div id="chat-window">
-        <div id="chat-header">Shared Brain AI</div>
+        <div id="chat-header">PPT(Personal Pre-trained Transformer)</div>
         <div id="chat-messages"></div>
         <form id="chat-form">
             <input type="text" id="message-input" placeholder="메시지를 입력하세요..." autocomplete="off">
@@ -56,7 +56,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                addMessage('오류가 발생했습니다. 서버 로그를 확인해주세요.', 'bot');
+                addMessage('오류가 발생했습니다. 잠시후 다시 시도해주세요', 'bot');
             }
         });
 
@@ -68,7 +68,7 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        addMessage('안녕하세요! 저는 모두의 대화로 성장하는 공유 지능 AI입니다.', 'bot');
+        addMessage('안녕하세요! 저는 모두의 대화로 성장하는 PPT(Personal Pre-trained Transformer)입니다.', 'bot');
     </script>
 </body>
 </html>

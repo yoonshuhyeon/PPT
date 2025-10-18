@@ -83,9 +83,9 @@ class SimpleChatBot:
         self.learning = LearningModule(kf)
         self.generative = GenerativeModule(mf)
         self.default_rules = [
-            (r'^(안녕|하이)[.!?]?$', ['반갑습니다.']),
-            (r'(너의|네) 이름', ['저는 라즈베리 파이에서 동작하는 AI입니다.']),
-            (r'^(고마워|감사합니다|땡큐)[.!?]?$', ['천만에요!']),
+            (r'^(안녕|하이|반가워|ㅎㅇ)[.!?]?$', ['반갑습니다.']),
+            (r'(너의|네) 이름', ['PPT(Personal Pre-trained Transformer)입니다.']),
+            (r'^(고마워|감사합니다|땡큐|감사)[.!?]?$', ['천만에요!']),
             (r'^(아하|아|오|그렇구나|알겠습니다|네)[.!?]?$', ['도움이 되셨다니 다행입니다.'])
         ]
     def think(self, user_input):
